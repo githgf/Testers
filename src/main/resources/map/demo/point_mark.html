@@ -1,0 +1,248 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>自适应显示多个点标记</title>
+    <link rel="stylesheet" href="https://a.amap.com/jsapi_demos/static/demo-center/css/demo-center.css"/>
+    <style>
+        html, body, #container {
+            height: 100%;
+            width: 100%;
+        }
+
+        .amap-icon img{
+            width: 25px;
+            height: 34px;
+        }
+        <!--自定义信息弹窗组件的--> 
+        .content-window-card {
+            position: relative;
+            box-shadow: none;
+            bottom: 0;
+            left: 0;
+            width: auto;
+            padding: 0;
+        }
+
+        .content-window-card p {
+            height: 2rem;
+        }
+
+        .custom-info {
+            border: solid 1px silver;
+        }
+
+        div.info-top {
+            position: relative;
+            background: none repeat scroll 0 0 #F9F9F9;
+            border-bottom: 1px solid #CCC;
+            border-radius: 5px 5px 0 0;
+        }
+
+        div.info-top div {
+            display: inline-block;
+            color: #333333;
+            font-size: 14px;
+            font-weight: bold;
+            line-height: 31px;
+            padding: 0 10px;
+        }
+
+        div.info-top img {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            transition-duration: 0.25s;
+        }
+
+        div.info-top img:hover {
+            box-shadow: 0px 0px 5px #000;
+        }
+
+        div.info-middle {
+            font-size: 12px;
+            padding: 10px 6px;
+            line-height: 20px;
+        }
+
+        div.info-bottom {
+            height: 0px;
+            width: 100%;
+            clear: both;
+            text-align: center;
+        }
+
+        div.info-bottom img {
+            position: relative;
+            z-index: 104;
+        }
+
+        span {
+            margin-left: 5px;
+            font-size: 11px;
+        }
+
+        .info-middle img {
+            float: left;
+            margin-right: 6px;
+        }
+    </style>
+</head>
+<body>
+<div id="container"></div>
+
+<div class="input-card">
+    <h4>地图自适应</h4>
+    <input id="setFitView" type="button" class="btn" value="地图自适应显示" />
+</div>
+<div class="info">
+    <div id="centerCoord"></div>
+    <div id="tips"></div>
+</div>
+<script type="text/javascript"
+        src="https://webapi.amap.com/maps?v=1.4.10&key=0b1208dcefbf250a0eaa3269d8fbb50f"></script>
+<script type="text/javascript" src="../js/latlng.js"></script>
+<script type="text/javascript">
+    var map = new AMap.Map('container', {
+        resizeEnable: true,
+        center: [116.397428, 39.90923],
+        zoom: 10
+    });
+
+    map.clearMap();  // 清除地图覆盖物
+
+    var markers = [{
+        icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-1.png',
+        position: [120.327243,30.310278]
+    }, {
+        icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-2.png',
+        position: [116.368904, 39.913423]
+    }, {
+        icon: '../icon/dir-via-marker.png',
+        position: [116.305467, 39.807761]
+    }];
+
+    var locations = [
+            {
+            "lng": 116.191031,
+            "lat": 39.988585,
+            "count": 10
+        }, {
+            "lng": 116.389275,
+            "lat": 39.925818,
+            "count": 11
+        }, {
+            "lng": 116.287444,
+            "lat": 39.810742,
+            "count": 12
+        }, {
+            "lng": 116.481707,
+            "lat": 39.940089,
+            "count": 13
+        }, {
+            "lng": 116.410588,
+            "lat": 39.880172,
+            "count": 14
+        }, {
+            "lng": 116.394816,
+            "lat": 39.91181,
+            "count": 15
+        }
+    ]
+
+    // 添加一些分布不均的点到地图上,地图上添加三个点标记，作为参照
+    locations.forEach(function(latlng) {
+        var marker = 
+        new AMap.Marker({
+            map: map,
+            icon: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-2.png',
+            position: [latlng.lng, latlng.lat],
+            offset: new AMap.Pixel(20, 20)
+        });
+        //绑定标记物点击事件
+        marker.on('click', function(){
+            AMap.event.addListener(marker, 'click', function(){
+                infoWindow.open(map, marker.getPosition());
+            });
+        });
+
+    });
+
+    var center = map.getCenter();
+
+    var centerText = '当前中心点坐标：' + center.getLng() + ',' + center.getLat();
+    document.getElementById('centerCoord').innerHTML = centerText;
+    document.getElementById('tips').innerHTML = '成功添加三个点标记，其中有两个在当前地图视野外！';
+
+    // 添加事件监听, 使地图自适应显示到合适的范围
+    AMap.event.addDomListener(document.getElementById('setFitView'), 'click', function() {
+        var newCenter = map.setFitView();
+        document.getElementById('centerCoord').innerHTML = '当前中心点坐标：' + newCenter.getCenter();
+        document.getElementById('tips').innerHTML = '通过setFitView，地图自适应显示到合适的范围内,点标记已全部显示在视野中！';
+    });
+
+
+ 
+
+    //实例化信息窗体
+    var title = '方恒假日酒店<span style="font-size:11px;color:#F00;">价格:318</span>',
+        content = [];
+    content.push("<img src='http://tpc.googlesyndication.com/simgad/5843493769827749134'>地址：北京市朝阳区阜通东大街6号院3号楼东北8.3公里");
+    content.push("电话：010-64733333");
+    content.push("<a href='https://ditu.amap.com/detail/B000A8URXB?citycode=110105'>详细信息</a>");
+    var infoWindow = new AMap.InfoWindow({
+        isCustom: true,  //使用自定义窗体
+        content: createInfoWindow(title, content.join("<br/>")),
+        offset: new AMap.Pixel(16, -45)
+    });
+
+    //构建自定义信息窗体
+    function createInfoWindow(title, content) {
+        var info = document.createElement("div");
+        info.className = "custom-info input-card content-window-card";
+
+        //可以通过下面的方式修改自定义窗体的宽高
+        //info.style.width = "400px";
+        // 定义顶部标题
+        var top = document.createElement("div");
+        var titleD = document.createElement("div");
+        var closeX = document.createElement("img");
+        top.className = "info-top";
+        titleD.innerHTML = title;
+        closeX.src = "https://webapi.amap.com/images/close2.gif";
+        closeX.onclick = closeInfoWindow;
+
+        top.appendChild(titleD);
+        top.appendChild(closeX);
+        info.appendChild(top);
+
+        // 定义中部内容
+        var middle = document.createElement("div");
+        middle.className = "info-middle";
+        middle.style.backgroundColor = 'white';
+        middle.innerHTML = content;
+        info.appendChild(middle);
+
+        // 定义底部内容
+        var bottom = document.createElement("div");
+        bottom.className = "info-bottom";
+        bottom.style.position = 'relative';
+        bottom.style.top = '0px';
+        bottom.style.margin = '0 auto';
+        var sharp = document.createElement("img");
+        sharp.src = "https://webapi.amap.com/images/sharp.png";
+        bottom.appendChild(sharp);
+        info.appendChild(bottom);
+        return info;
+    }
+
+    //关闭信息窗体
+    function closeInfoWindow() {
+        map.clearInfoWindow();
+    }
+
+</script>
+</body>
+</html>

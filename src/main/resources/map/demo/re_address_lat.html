@@ -1,0 +1,141 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>逆/地理编码(地址《-》经纬度)</title>
+    <link rel="stylesheet" href="../css/demo-center.css"/>
+    <style>
+        html,body,#container{
+            height:100%;
+            width:100%;
+        }
+        .btn{
+            width:10rem;
+            margin-left:6.8rem;   
+        }
+    </style>
+</head>
+<body>
+<div id="container"></div>
+<div class="input-card" style='width:28rem;'>
+    <label style='color:grey'>地理编码，根据地址获取经纬度坐标</label>
+    <div class="input-item">
+            <div class="input-item-prepend"><span class="input-item-text" >地址</span></div>
+            <input id='address' type="text" value='萧山区市心北路' >
+    </div>
+    <div class="input-item">
+            <div class="input-item-prepend"><span class="input-item-text">经纬度</span></div>
+            <input id='lnglat' disabled type="text">
+    </div>
+    <input id="geo" type="button" class="btn" value="地址 -> 经纬度" />
+</div>
+
+<div class="input-card-left" style='width:28rem;'>
+    <label style='color:grey'>逆地理编码，根据经纬度获取地址信息</label>
+    <div class="input-item">
+        <div class="input-item-prepend"><span class="input-item-text">经纬度</span></div>
+        <input id='relnglat' type="text" value='116.39,39.9'>
+    </div>
+    <div class="input-item">
+        <div class="input-item-prepend"><span class="input-item-text" >地址</span></div>
+        <input id='readdress' type="text" disabled>
+    </div>
+    <input id="regeo" type="button" class="btn" value="经纬度 -> 地址" >
+</div>
+<script type="text/javascript" src="https://webapi.amap.com/maps?v=1.4.10&key=0b1208dcefbf250a0eaa3269d8fbb50f&plugin=AMap.Geocoder"></script>
+<script type="text/javascript" src="../js/jquery-3.3.1.min.js"></script>
+<script type="text/javascript">
+    var map = new AMap.Map("container", {
+        resizeEnable: true
+    });
+    
+    var icon = new AMap.Icon({
+        size: new AMap.Size(60 ,100),    // 图标尺寸
+        image: 'http://a.amap.com/jsapi_demos/static/demo-center/icons/dir-via-marker.png',  // Icon的图像
+        //imageOffset: new AMap.Pixel(60, 60),  // 图像相对展示区域的偏移量，适于雪碧图等(如果赋值可能出现地图缩放锚点漂移情况)
+        imageSize: new AMap.Size(40, 50)   // 根据所设置的大小拉伸或压缩图片 数值代表%..
+    });
+
+    var geocoder,marker;
+    //address -> lnglat
+    function geoCode() {
+        if(!geocoder){
+            geocoder = new AMap.Geocoder({
+                 //城市设为北京，默认：“全国”
+            });
+        }
+        var address  = document.getElementById('address').value;
+        geocoder.getLocation(address, function(status, result) {
+            if (status === 'complete'&&result.geocodes.length) {
+                console.log(JSON.stringify(result));
+                var lnglat = result.geocodes[0].location
+                document.getElementById('lnglat').value = lnglat;
+
+                if(!marker){
+                    marker = new AMap.Marker({
+                                    icon:icon,
+                                    title:result.geocodes[0].formattedAddress,
+                                    position:[lnglat.lng,lnglat.lat],
+                                    lnglatoffset: new AMap.Pixel(-13, -30)
+                                });
+                    map.add(marker);
+                }
+                marker.setPosition(lnglat);
+                map.setFitView(marker);
+
+                //view();
+            }else{alert(JSON.stringify(result))}
+        });
+    }
+    //lnglat -> address
+    function regeoCode() {
+        if(!geocoder){
+            geocoder = new AMap.Geocoder({});
+        }
+        var lnglat  = document.getElementById('relnglat').value.split(',');
+         if(!marker){
+            marker = new AMap.Marker();
+            map.add(marker);
+        }
+        marker.setPosition(lnglat);
+        //类似于改变当前视图地点
+        map.setFitView(marker);
+        geocoder.getAddress(lnglat, function(status, result) {
+            if (status === 'complete'&&result.regeocode) {
+                var address = result.regeocode.formattedAddress;
+                document.getElementById('readdress').value = address;
+            }else{alert(JSON.stringify(result))}
+        });
+    }
+
+    document.getElementById("geo").onclick = geoCode;
+    document.getElementById("regeo").onclick = regeoCode;
+    document.getElementById('relnglat').onkeydown = function(e) {
+        if (e.keyCode === 13) {
+            regeoCode();
+            return false;
+        }
+        return true;
+    };
+    document.getElementById('address').onkeydown = function(e) {
+        if (e.keyCode === 13) {
+            geoCode();
+            return false;
+        }
+        return true;
+    };
+    
+    //点击屏幕上任意一点 显示 逆编码/编码
+    //  map.on('click',function(e){
+    //      console.log(e);
+    //     document.getElementById('relnglat').value = e.lnglat;
+    //     document.getElementById('lnglat').value = e.lnglat;
+    //     regeoCode();
+    //     geoCode();
+    // })
+
+</script>
+</body>
+</html>

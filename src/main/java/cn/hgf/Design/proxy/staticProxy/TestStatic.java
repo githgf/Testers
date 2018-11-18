@@ -1,8 +1,9 @@
 package cn.hgf.Design.proxy.staticProxy;
 
-import proxy.Employee;
-import proxy.EmployeeService;
-import proxy.EmployeeServiceImpl;
+
+import cn.hgf.Design.proxy.Employee;
+import cn.hgf.Design.proxy.EmployeeService;
+import cn.hgf.Design.proxy.EmployeeServiceImpl;
 
 public class TestStatic {
 

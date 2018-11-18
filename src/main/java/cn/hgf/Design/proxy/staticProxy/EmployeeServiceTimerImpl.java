@@ -1,10 +1,8 @@
 package cn.hgf.Design.proxy.staticProxy;
 
 
-import proxy.Employee;
-import proxy.EmployeeService;
-
-import java.text.DateFormat;
+import cn.hgf.Design.proxy.Employee;
+import cn.hgf.Design.proxy.EmployeeService;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 

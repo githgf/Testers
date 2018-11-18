@@ -1,6 +1,6 @@
 package cn.hgf.Design.Strategy;
 
-import FactoryDesign.CashSuper;
+import cn.hgf.Design.FactoryDesign.CashSuper;
 
 /**
  * @Author : Fan Yin

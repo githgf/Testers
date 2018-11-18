@@ -1,7 +1,8 @@
 package cn.hgf.Design.Strategy;
 
-import FactoryDesign.CashImpl;
-import FactoryDesign.CashSuper;
+
+import cn.hgf.Design.FactoryDesign.CashImpl;
+import cn.hgf.Design.FactoryDesign.CashSuper;
 
 /**
  * @Author : Fan Yin

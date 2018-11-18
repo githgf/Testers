@@ -1,14 +1,6 @@
 package cn.hgf.Design.proxy.jdkDyProxy;
 
-import org.apache.commons.collections.Bag;
-import org.junit.Test;
-import proxy.Employee;
-import proxy.EmployeeService;
-import proxy.EmployeeServiceImpl;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import org.apache.commons.collections4.Bag;
 
 public class TestDyJDKProxy {
 

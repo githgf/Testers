@@ -3,9 +3,7 @@ package cn.hgf.se.dataStruct;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Stack;
+import java.util.*;
 
 /**
  *  树结构
@@ -21,6 +19,7 @@ import java.util.Stack;
  */
 public class StudyTree {
     TreeNode ROOT = null;
+    TreeNode ROOTS = null;
 
     /*
         中序遍历（非递归）：左、根、右
@@ -86,10 +85,63 @@ public class StudyTree {
         return nodes;
     }
 
+    /*
+        后序遍历：左、右、根
+     */
+    List<Integer> postOrder(TreeNode treeNode){
+        if (treeNode == null)return null;
+        List<Integer> nodes = new ArrayList<>();
+
+        Stack<TreeNode> treeNodeStack = new Stack<>();
+        treeNodeStack.push(treeNode);
+
+        while (!treeNodeStack.isEmpty()){
+
+            TreeNode peek = treeNodeStack.peek();
+            if (peek.left != null){
+                treeNodeStack.push(peek.left);
+                peek.left = null;
+            }else if (peek.right != null){
+                treeNodeStack.push(peek.right);
+                peek.right = null;
+            }else {
+                TreeNode pop = treeNodeStack.pop();
+                nodes.add(pop.val);
+            }
+        }
+
+        return nodes;
+
+    }
+
+    /*
+        广度优先遍历：按层级遍历，只有当前层的所有节点遍历完，才去遍历下层的节点
+     */
+    public List<Integer> breadthFirstSearch(TreeNode treeNode){
+        if (treeNode == null)return null;
+        List<Integer> nodes = new ArrayList<>();
+
+        List<TreeNode> treeNodes = new LinkedList<>();
+        ((LinkedList<TreeNode>) treeNodes).addFirst(treeNode);
+        while (!treeNodes.isEmpty()){
+            TreeNode first = ((LinkedList<TreeNode>) treeNodes).removeFirst();
+
+            nodes.add(first.val);
+            if (first.childNodes != null){
+                treeNodes.addAll(first.childNodes);
+            }
+
+        }
+        return nodes;
+    }
+
+    /*
+        深度优先遍历:和先序遍历相类似
+     */
 
     @Test
     public void testMiddleOrder(){
-        preOrder(ROOT).forEach(System.out :: println);
+        breadthFirstSearch(ROOT).forEach(System.out :: println);
 
     }
 
@@ -104,13 +156,18 @@ public class StudyTree {
         TreeNode treeNode_7 = new TreeNode(7);
         ROOT.left = treeNode_2;
         ROOT.right = treeNode_3;
+        ROOT.addNode(treeNode_2);
+        ROOT.addNode(treeNode_3);
 
         treeNode_2.left = treeNode_4;
         treeNode_2.right = treeNode_5;
+        treeNode_2.addNode(treeNode_4);
+        treeNode_2.addNode(treeNode_5);
 
         treeNode_3.left = treeNode_6;
         treeNode_3.right = treeNode_7;
-
+        treeNode_3.addNode(treeNode_6);
+        treeNode_3.addNode(treeNode_7);
     }
 
 
@@ -119,9 +176,15 @@ public class StudyTree {
 class TreeNode{
     TreeNode left;
     TreeNode right;
+    List<TreeNode> childNodes;
     int val;
 
     public TreeNode(int val) {
         this.val = val;
+        this.childNodes = new ArrayList<>();
+    }
+
+    public void addNode(TreeNode treeNode){
+        childNodes.add(treeNode);
     }
 }

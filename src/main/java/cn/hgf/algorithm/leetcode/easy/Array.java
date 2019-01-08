@@ -51,17 +51,23 @@ public class Array {
      * @param k         位移量
      */
     public void rotate(int[] nums, int k) {
+        if ( nums == null ||nums.length == 1)return;
 
-        reverseOrder(nums,k + 1,nums.length - 1);
-        reverseOrder(nums,0,k);
+        k = k >= nums.length ? k % (nums.length): k;
+
+        if (k <= 0)return;
+
+
+        reverseOrder(nums,0,nums.length - k - 1);
+        reverseOrder(nums,nums.length - k,nums.length - 1);
         reverseOrder(nums,0,nums.length - 1);
 
     }
 
     @Test
     public void testRotate(){
-        int[] nums = new int[]{1,2,3,4,5,6,7};
-        rotate(nums,4);
+        int[] nums = new int[]{1,2};
+        rotate(nums,1);
         System.out.println(JSONArray.toJSONString(nums));
     }
 
@@ -73,7 +79,7 @@ public class Array {
      * @param end       结束排序的下标
      */
     void reverseOrder(int[] nums,int start,int end){
-
+        if (start >= nums.length || end >= nums.length || start > end)return;
         for (int i = start; i <= (end + start) / 2; i++) {
             //将 nums[(start + end) - i] 和 nums[i] 交换位置
 

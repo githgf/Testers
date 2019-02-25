@@ -107,7 +107,7 @@ public class HttpClientDemo {
 
 
         try {
-            result =EntityUtils.toString(httpEntity, "utf-8");
+            result =EntityUtils.toString(httpEntity);
         } catch (IOException e) {
             e.printStackTrace();
         }

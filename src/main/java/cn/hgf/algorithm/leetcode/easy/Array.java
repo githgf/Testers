@@ -3,6 +3,12 @@ package cn.hgf.algorithm.leetcode.easy;
 import com.alibaba.fastjson.JSONArray;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 
 public class Array {
 
@@ -113,6 +119,61 @@ public class Array {
         target -= source;
         System.out.println("交换之后：source = "+ source + ",    target = " + target);
 
+    }
+
+    /**
+     * 给定两个数组，编写一个函数来计算它们的交集。
+     * @param nums1
+     * @param nums2
+     * @return
+     */
+    public int[] intersect(int[] nums1, int[] nums2) {
+
+        List<Integer> integers = new ArrayList<>();
+        if (nums1.length != 0 && nums2.length != 0){
+
+            KK:for (int i = 0; i < nums1.length; i++) {
+
+                LL:for (int j = 0; j < nums2.length; j++) {
+
+                   if (nums1[i] == nums2[j]){
+                       integers.add(nums1[i]);
+                       //删除指定下标的元素
+                       if (nums2.length == 1)break KK;
+                       if (nums2.length - (j + 1) > 0){
+
+                           for (int k = j; k < nums2.length - 1; k++) {
+                               nums2[k] = nums2[k + 1];
+                           }
+                           nums2[nums2.length - 1] = -10000;
+                       }
+
+                       break LL;
+                   }
+
+                }
+            }
+
+        }
+
+        int[] resultes = new int[integers.size()];
+        int flag = 0;
+        for (Integer integer : integers) {
+            resultes[flag++] = integer;
+        }
+
+        return resultes;
+
+    }
+
+    @Test
+    public void testIntersect(){
+
+        int[] nums1 = new int[]{0,5,8,7,2,9,7,5};
+        int[] nums2 = new int[]{1,4,8,9};
+
+        int[] intersect = intersect(nums1, nums2);
+        System.out.println(JSONArray.toJSONString(intersect));
     }
 
 }
